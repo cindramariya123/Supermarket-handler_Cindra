@@ -1,0 +1,18 @@
+# Secrets
+.env
+*.env
+credentials*.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Office temp files
+~$*
+
+# Large videos (share demo video via Drive instead)
+*.mp4
+*.mov

@@ -1,0 +1,106 @@
+{
+  "name": "Expiry Date Monitor (PostgreSQL)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "c1000000-0000-4000-8000-000000000001",
+      "name": "Every Morning 8 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE products SET\n  discount_percent = CASE\n    WHEN expiry_date < CURRENT_DATE THEN 0\n    WHEN expiry_date - CURRENT_DATE <= 1 THEN 30\n    WHEN expiry_date - CURRENT_DATE <= 3 THEN 20\n    ELSE 0\n  END,\n  action = CASE\n    WHEN expiry_date < CURRENT_DATE THEN 'EXPIRED - Remove from shelf'\n    WHEN expiry_date - CURRENT_DATE <= 1 THEN 'Apply 30% discount'\n    WHEN expiry_date - CURRENT_DATE <= 3 THEN 'Apply 20% discount'\n    ELSE 'No action'\n  END,\n  last_checked = NOW();",
+        "options": {}
+      },
+      "id": "c1000000-0000-4000-8000-000000000002",
+      "name": "Calculate & Save Discounts",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  COUNT(*)::int AS total,\n  string_agg(\n    '- ' || product_name || ' (' || quantity || ' units) - ' ||\n    CASE WHEN expiry_date < CURRENT_DATE THEN 'expired'\n         ELSE (expiry_date - CURRENT_DATE) || ' day(s) left' END ||\n    ' - ' || action,\n    E'\\n' ORDER BY expiry_date\n  ) AS product_list\nFROM products\nWHERE expiry_date <= CURRENT_DATE + 3\n  AND quantity > 0;",
+        "options": {}
+      },
+      "id": "c1000000-0000-4000-8000-000000000003",
+      "name": "Get Products Needing Attention",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [480, 0],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "d2000000-0000-4000-8000-000000000001",
+              "leftValue": "={{ $json.total }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c1000000-0000-4000-8000-000000000004",
+      "name": "Any Products?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [720, 0]
+    },
+    {
+      "parameters": {
+        "sendTo": "manager@example.com",
+        "subject": "=Expiry Alert: {{ $json.total }} products need attention today",
+        "emailType": "text",
+        "message": "=Good morning,\n\nThese products need attention today:\n\n{{ $json.product_list }}\n\nRegards,\nExpiry Monitor",
+        "options": {}
+      },
+      "id": "c1000000-0000-4000-8000-000000000005",
+      "name": "Email Manager",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [960, 0]
+    }
+  ],
+  "connections": {
+    "Every Morning 8 AM": {
+      "main": [[{ "node": "Calculate & Save Discounts", "type": "main", "index": 0 }]]
+    },
+    "Calculate & Save Discounts": {
+      "main": [[{ "node": "Get Products Needing Attention", "type": "main", "index": 0 }]]
+    },
+    "Get Products Needing Attention": {
+      "main": [[{ "node": "Any Products?", "type": "main", "index": 0 }]]
+    },
+    "Any Products?": {
+      "main": [[{ "node": "Email Manager", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="720" viewBox="0 0 1440 720" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#555"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#336791"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="1440" height="720" fill="#f7f8fa"/>
+
+  <!-- Title -->
+  <text x="40" y="52" font-size="28" font-weight="700" fill="#1f2937">Expiry Date Monitoring &amp; Food Waste Reduction</text>
+  <text x="40" y="82" font-size="16" fill="#6b7280">n8n automation workflow · runs every morning · PostgreSQL + Gmail</text>
+
+  <!-- Connections between nodes -->
+  <g stroke="#555" stroke-width="2.5" fill="none">
+    <path d="M240,230 L296,230" marker-end="url(#arrow)"/>
+    <path d="M500,230 L556,230" marker-end="url(#arrow)"/>
+    <path d="M760,230 L816,230" marker-end="url(#arrow)"/>
+    <path d="M1020,230 L1076,230" marker-end="url(#arrow)"/>
+    <path d="M1180,280 L1180,376" marker-end="url(#arrow)"/>
+  </g>
+  <text x="1030" y="218" font-size="11" fill="#555">yes</text>
+
+  <!-- Database links -->
+  <path d="M400,280 C400,330 450,350 478,372" stroke="#336791" stroke-width="2" stroke-dasharray="6,5" fill="none" marker-end="url(#arrowBlue)"/>
+  <text x="352" y="330" font-size="12" fill="#336791">UPDATE</text>
+  <path d="M600,376 C630,350 660,330 660,284" stroke="#336791" stroke-width="2" stroke-dasharray="6,5" fill="none" marker-end="url(#arrowBlue)"/>
+  <text x="672" y="330" font-size="12" fill="#336791">SELECT</text>
+
+  <!-- 1 Schedule -->
+  <g filter="url(#shadow)"><rect x="40" y="180" width="200" height="100" rx="12" fill="#fff" stroke="#f57c00" stroke-width="2.5"/></g>
+  <circle cx="68" cy="208" r="15" fill="#f57c00"/>
+  <text x="68" y="213" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+  <text x="92" y="213" font-size="16" font-weight="700" fill="#1f2937">Schedule</text>
+  <text x="58" y="244" font-size="13" fill="#374151">Every day at 8:00 AM</text>
+  <text x="58" y="265" font-size="11" fill="#9ca3af">Schedule Trigger</text>
+
+  <!-- 2 Calculate & Save -->
+  <g filter="url(#shadow)"><rect x="300" y="180" width="200" height="100" rx="12" fill="#fff" stroke="#336791" stroke-width="2.5"/></g>
+  <circle cx="328" cy="208" r="15" fill="#336791"/>
+  <text x="328" y="213" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">2</text>
+  <text x="352" y="213" font-size="16" font-weight="700" fill="#1f2937">Calculate &amp; Save</text>
+  <text x="318" y="244" font-size="13" fill="#374151">Days left → discount</text>
+  <text x="318" y="265" font-size="11" fill="#9ca3af">Postgres · UPDATE</text>
+
+  <!-- 3 Get Products -->
+  <g filter="url(#shadow)"><rect x="560" y="180" width="200" height="100" rx="12" fill="#fff" stroke="#336791" stroke-width="2.5"/></g>
+  <circle cx="588" cy="208" r="15" fill="#336791"/>
+  <text x="588" y="213" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">3</text>
+  <text x="612" y="213" font-size="16" font-weight="700" fill="#1f2937">Get Expiring</text>
+  <text x="578" y="244" font-size="13" fill="#374151">Expiring in ≤ 3 days</text>
+  <text x="578" y="265" font-size="11" fill="#9ca3af">Postgres · SELECT</text>
+
+  <!-- 4 Filter -->
+  <g filter="url(#shadow)"><rect x="820" y="180" width="200" height="100" rx="12" fill="#fff" stroke="#1565c0" stroke-width="2.5"/></g>
+  <circle cx="848" cy="208" r="15" fill="#1565c0"/>
+  <text x="848" y="213" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">4</text>
+  <text x="872" y="213" font-size="16" font-weight="700" fill="#1f2937">Any Products?</text>
+  <text x="838" y="244" font-size="13" fill="#374151">Only if count &gt; 0</text>
+  <text x="838" y="265" font-size="11" fill="#9ca3af">Filter</text>
+
+  <!-- 5 Notify -->
+  <g filter="url(#shadow)"><rect x="1080" y="180" width="200" height="100" rx="12" fill="#fff" stroke="#c62828" stroke-width="2.5"/></g>
+  <circle cx="1108" cy="208" r="15" fill="#c62828"/>
+  <text x="1108" y="213" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">5</text>
+  <text x="1132" y="213" font-size="16" font-weight="700" fill="#1f2937">Notify</text>
+  <text x="1098" y="244" font-size="13" fill="#374151">Email the manager</text>
+  <text x="1098" y="265" font-size="11" fill="#9ca3af">Gmail</text>
+
+  <!-- PostgreSQL database -->
+  <g filter="url(#shadow)">
+    <path d="M420,394 a110,18 0 0,1 220,0 v80 a110,18 0 0,1 -220,0 z" fill="#e3ecf5" stroke="#336791" stroke-width="2"/>
+    <ellipse cx="530" cy="394" rx="110" ry="18" fill="#c5d7ea" stroke="#336791" stroke-width="2"/>
+  </g>
+  <text x="530" y="440" font-size="16" font-weight="700" fill="#1e3a5f" text-anchor="middle">PostgreSQL</text>
+  <text x="530" y="462" font-size="13" fill="#336791" text-anchor="middle">table: products</text>
+  <text x="530" y="516" font-size="11" fill="#6b7280" text-anchor="middle">id · product_name · category · quantity · expiry_date</text>
+  <text x="530" y="532" font-size="11" fill="#6b7280" text-anchor="middle">discount_percent · action · last_checked</text>
+
+  <!-- Manager inbox -->
+  <g filter="url(#shadow)"><rect x="1030" y="380" width="370" height="150" rx="12" fill="#fff" stroke="#d1d5db" stroke-width="1.5"/></g>
+  <rect x="1030" y="380" width="370" height="34" rx="12" fill="#fdecea"/>
+  <rect x="1030" y="398" width="370" height="16" fill="#fdecea"/>
+  <text x="1048" y="402" font-size="13" font-weight="700" fill="#c62828">✉ Manager's inbox · 8:00 AM</text>
+  <text x="1048" y="436" font-size="13" font-weight="700" fill="#1f2937">Expiry Alert: 3 products need attention today</text>
+  <text x="1048" y="460" font-size="12" fill="#374151">- Eggs (40 units) - expired - Remove from shelf</text>
+  <text x="1048" y="483" font-size="12" fill="#374151">- Milk (20 units) - 1 day(s) left - Apply 30% discount</text>
+  <text x="1048" y="506" font-size="12" fill="#374151">- Bread (15 units) - 2 day(s) left - Apply 20% discount</text>
+
+  <!-- Discount rules -->
+  <g filter="url(#shadow)"><rect x="40" y="560" width="560" height="140" rx="12" fill="#fff" stroke="#d1d5db" stroke-width="1.5"/></g>
+  <text x="60" y="590" font-size="16" font-weight="700" fill="#1f2937">Discount rules (step 2)</text>
+  <rect x="60" y="604" width="14" height="14" rx="3" fill="#6b7280"/>
+  <text x="84" y="616" font-size="14" fill="#374151"><tspan font-weight="700">Expired</tspan>  →  Remove from shelf</text>
+  <rect x="60" y="628" width="14" height="14" rx="3" fill="#c62828"/>
+  <text x="84" y="640" font-size="14" fill="#374151"><tspan font-weight="700">0 – 1 day left</tspan>  →  30% discount</text>
+  <rect x="60" y="652" width="14" height="14" rx="3" fill="#f57c00"/>
+  <text x="84" y="664" font-size="14" fill="#374151"><tspan font-weight="700">2 – 3 days left</tspan>  →  20% discount</text>
+  <rect x="60" y="676" width="14" height="14" rx="3" fill="#2e7d32"/>
+  <text x="84" y="688" font-size="14" fill="#374151"><tspan font-weight="700">More than 3 days</tspan>  →  No action</text>
+  <text x="350" y="616" font-size="13" fill="#6b7280">Example</text>
+  <text x="350" y="640" font-size="13" fill="#374151">Milk · tomorrow → 30%</text>
+  <text x="350" y="664" font-size="13" fill="#374151">Bread · in 2 days → 20%</text>
+  <text x="350" y="688" font-size="13" fill="#374151">Yogurt · in 10 days → none</text>
+
+  <!-- Optional AI -->
+  <rect x="640" y="590" width="370" height="80" rx="12" fill="#fff8e1" stroke="#f9a825" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="660" y="620" font-size="14" font-weight="700" fill="#8d6e00">Optional AI step (bonus)</text>
+  <text x="660" y="643" font-size="13" fill="#5d4a00">Gemini suggests discount % using days left</text>
+  <text x="660" y="661" font-size="13" fill="#5d4a00">and stock quantity, between steps 3 and 4</text>
+</svg>
