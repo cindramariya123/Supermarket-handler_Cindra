@@ -2,7 +2,7 @@
 
 **Team:** 7 members · **Duration:** 7 days · **Tools:** PostgreSQL (Supabase), n8n, Budibase, GitHub Projects
 
-Replace "Member 1–7" with your names.
+Replace "Sandra–7" with your names.
 
 ---
 
@@ -28,8 +28,8 @@ Replace "Member 1–7" with your names.
 | **Day 2** | Build | Build the main feature of your part |
 | **Day 3** | Build | Finish your part's features |
 | **Day 4** | Finish & self-test | Test your own part, fix bugs, push to your branch, open a Pull Request |
-| **Day 5** | **Integration day** | Morning: Member 1 merges all PRs and everyone switches to the **shared** Supabase. Afternoon: fix integration problems. **Report sections due.** |
-| **Day 6** | Testing & docs | Run the full test plan, take final screenshots, Member 7 combines the report |
+| **Day 5** | **Integration day** | Morning: Sandra merges all PRs and everyone switches to the **shared** Supabase. Afternoon: fix integration problems. **Report sections due.** |
+| **Day 6** | Testing & docs | Run the full test plan, take final screenshots, Tpraiz combines the report |
 | **Day 7** | Presentation | Slides, demo rehearsal (twice), backup demo video, submit |
 
 **Check-ins:** 10 minutes every evening (Days 1–6): what I finished, what's next, what's blocking me.
@@ -38,7 +38,7 @@ Replace "Member 1–7" with your names.
 
 ## 3. Tasks (4 per member)
 
-### Member 1: Team Lead & Integration
+### Sandra: Team Lead & Integration
 | ID | Day | Task | Done when |
 |---|---|---|---|
 | 1.1 | D1 | Push this repo to GitHub, create the 7 branches, set up the Project board (section 6) | Everyone can check out their branch |
@@ -46,7 +46,7 @@ Replace "Member 1–7" with your names.
 | 1.3 | D2–3 | Architecture diagram (DB + n8n + 3 dashboards + 3 user types) | `docs/diagrams/architecture.png` |
 | 1.4 | D5–6 | Merge all PRs, lead integration, run `docs/test-plan.md` | All tests have a result |
 
-### Member 2: Database
+### Cindra: Database
 | ID | Day | Task | Done when |
 |---|---|---|---|
 | 2.1 | D1 | Create the **shared** Supabase project, run `database.sql`, share connection details privately | Team can connect |
@@ -54,7 +54,7 @@ Replace "Member 1–7" with your names.
 | 2.3 | D3 | Live discount view so discounts are always up to date on the dashboards | View returns correct values |
 | 2.4 | D4 | 50+ realistic sample products across all departments, keep `database/README.md` up to date | Data covers every expiry case |
 
-### Member 3: n8n Expiry Automation
+### Nilsha: n8n Expiry Automation
 | ID | Day | Task | Done when |
 |---|---|---|---|
 | 3.1 | D1 | Learn n8n basics, import `n8n/expiry-check.json`, connect your own Supabase | Test run succeeds |
@@ -62,7 +62,7 @@ Replace "Member 1–7" with your names.
 | 3.3 | D3 | Manager alert email + "no email if nothing is expiring" | Correct email received |
 | 3.4 | D4 | Test with expired / today / 1–3 days / none, export JSON to `n8n/` | All cases pass |
 
-### Member 4: Notifications & AI
+### Nayma: Notifications & AI
 | ID | Day | Task | Done when |
 |---|---|---|---|
 | 4.1 | D1 | Design the alert email layout (manager + department version) | Shared in the group |
@@ -70,7 +70,7 @@ Replace "Member 1–7" with your names.
 | 4.3 | D3–4 | Optional: Gemini suggests discount % from days left + quantity | AI result shown in the email |
 | 4.4 | D4 | Export JSON to `n8n/`, screenshots | Pushed to branch |
 
-### Member 5: Manager Dashboard (Admin)
+### Prionto: Manager Dashboard (Admin)
 | ID | Day | Task | Done when |
 |---|---|---|---|
 | 5.1 | D1 | Wireframe of the manager screens | Shared in the group |
@@ -78,7 +78,7 @@ Replace "Member 1–7" with your names.
 | 5.3 | D3 | Products screen: list, add, edit, delete | All 4 actions work |
 | 5.4 | D4 | Departments + employees screens: add an employee to a department, deactivate | Employee appears in the right department |
 
-### Member 6: Employee Dashboard & Login
+### Sachini: Employee Dashboard & Login
 | ID | Day | Task | Done when |
 |---|---|---|---|
 | 6.1 | D1 | Create the **shared** Budibase app, connect PostgreSQL, invite Members 5 & 7 as builders | All 3 can edit |
@@ -86,7 +86,7 @@ Replace "Member 1–7" with your names.
 | 6.3 | D3 | Employee screen showing only their department's products | Each employee sees only their department |
 | 6.4 | D4 | Stock update form (change quantity, add new stock); export the Budibase app on D6 | Changes saved to the DB |
 
-### Member 7: Customer Offers Page & Report
+### Tpraiz: Customer Offers Page & Report
 | ID | Day | Task | Done when |
 |---|---|---|---|
 | 7.1 | D1 | Report outline in `docs/README.md` (already there), share the template with the team | Everyone knows their section |
@@ -103,19 +103,19 @@ Replace "Member 1–7" with your names.
 1. **The database is the contract.** Build against `database/database.sql`. Never rename a table or column without telling the team.
 2. **Don't wait. Use your own copy.** Days 1–4: everyone uses their own free Supabase. Day 5: switch to the shared one.
 3. **Stay in your own lane.** Change only your own folder or files. In Budibase, edit only your own screens.
-4. **One branch per member.** Push often. Open a Pull Request on Day 4, and Member 1 merges on Day 5.
+4. **One branch per member.** Push often. Open a Pull Request on Day 4, and Sandra merges on Day 5.
 5. **No secrets in GitHub.** Real passwords go only in the group chat (see `.env.example`).
 
 ### The only things you wait for (all ready by the evening of Day 1)
 | What | From |
 |---|---|
-| Shared Supabase details | Member 2 |
-| Shared Budibase app | Member 6 |
-| Shared n8n workspace | Member 1 |
+| Shared Supabase details | Cindra |
+| Shared Budibase app | Sachini |
+| Shared n8n workspace | Sandra |
 
 ---
 
-## 5. Repo setup (Member 1, Day 1)
+## 5. Repo setup (Sandra, Day 1)
 
 ```bash
 git init
