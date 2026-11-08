@@ -63,10 +63,35 @@ Budibase and n8n connect as the `postgres` user (the table owner), so they still
 | action | VARCHAR(100) | Set by n8n |
 | last_checked | TIMESTAMP | Set by n8n |
 
+### products_live (view, read-only): use this in the dashboards
+Calculates the discount from **today's date** every time it is read, so it is always up to date, even if n8n has not run yet. Uses the same discount rules as n8n (below).
+
+| Column | Notes |
+|---|---|
+| id, product_name, department_id, quantity, price, expiry_date, last_checked | Same as `products` |
+| department | Department name (no join needed) |
+| days_left | Negative = already expired |
+| status | 'Expired' / 'Expires today' / 'Expiring soon' (1–3 days) / 'Fresh' |
+| discount_percent, action | Live values |
+| offer_price | Price after discount |
+| stock_value | price × quantity |
+
+**Read** from `products_live`. **Add, edit and delete** still go to the `products` table.
+
+Example for the manager overview:
+```sql
+SELECT
+  COUNT(*) FILTER (WHERE status = 'Expired')                    AS expired,
+  COUNT(*) FILTER (WHERE status = 'Expires today')              AS expiring_today,
+  COUNT(*) FILTER (WHERE discount_percent > 0 AND quantity > 0) AS active_offers,
+  SUM(stock_value) FILTER (WHERE days_left <= 3)                AS value_at_risk
+FROM products_live;
+```
+
 ### customer_offers (view, read-only)
 `product_name, department, original_price, discount_percent, offer_price, best_before`
 
-Shows only products with a discount, not expired and in stock.
+Built on `products_live`. Shows only products with a discount, not expired and in stock.
 
 ## Discount rules
 | Days left | discount_percent | action |

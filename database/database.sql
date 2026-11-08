@@ -3,6 +3,7 @@
 -- WARNING: running it again deletes and recreates all tables
 
 DROP VIEW  IF EXISTS customer_offers;
+DROP VIEW  IF EXISTS products_live;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS employees;
 DROP TABLE IF EXISTS departments;
@@ -40,20 +41,65 @@ CREATE TABLE products (
     last_checked     TIMESTAMP
 );
 
--- 4. Customer offers (read-only view for the public offers page)
-CREATE VIEW customer_offers AS
+-- 4. Live product view (read-only, for the dashboards)
+--    Calculates days left, discount and action from TODAY's date every time
+--    it is read, so it is always up to date, even before n8n runs.
+--    Same discount rules as the n8n workflow.
+--    Dashboards READ from this view; add/edit/delete still go to "products".
+CREATE VIEW products_live WITH (security_invoker = true) AS
 SELECT
+    p.id,
     p.product_name,
+    p.department_id,
     d.name AS department,
-    p.price AS original_price,
-    p.discount_percent,
-    ROUND(p.price * (100 - p.discount_percent) / 100, 2) AS offer_price,
-    p.expiry_date AS best_before
+    p.quantity,
+    p.price,
+    p.expiry_date,
+    t.days_left,
+    CASE
+        WHEN t.days_left < 0  THEN 'Expired'
+        WHEN t.days_left = 0  THEN 'Expires today'
+        WHEN t.days_left <= 3 THEN 'Expiring soon'
+        ELSE                       'Fresh'
+    END AS status,
+    r.discount_percent,
+    r.action,
+    ROUND(p.price * (100 - r.discount_percent) / 100, 2) AS offer_price,
+    p.price * p.quantity AS stock_value,
+    p.last_checked
 FROM products p
 JOIN departments d ON d.id = p.department_id
-WHERE p.discount_percent > 0
-  AND p.expiry_date >= CURRENT_DATE
-  AND p.quantity > 0;
+CROSS JOIN LATERAL (SELECT p.expiry_date - CURRENT_DATE AS days_left) t
+CROSS JOIN LATERAL (
+    SELECT
+        CASE
+            WHEN t.days_left < 0  THEN 0
+            WHEN t.days_left <= 1 THEN 30
+            WHEN t.days_left <= 3 THEN 20
+            ELSE 0
+        END AS discount_percent,
+        CASE
+            WHEN t.days_left < 0  THEN 'EXPIRED - Remove from shelf'
+            WHEN t.days_left <= 1 THEN 'Apply 30% discount'
+            WHEN t.days_left <= 3 THEN 'Apply 20% discount'
+            ELSE 'No action'
+        END AS action
+) r;
+
+-- 5. Customer offers (read-only view for the public offers page)
+--    Built on products_live, so offers are always up to date.
+CREATE VIEW customer_offers AS
+SELECT
+    product_name,
+    department,
+    price AS original_price,
+    discount_percent,
+    offer_price,
+    expiry_date AS best_before
+FROM products_live
+WHERE discount_percent > 0
+  AND days_left >= 0
+  AND quantity > 0;
 
 -- ---------- Sample data ----------
 
@@ -163,15 +209,9 @@ ALTER TABLE employees   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products    ENABLE ROW LEVEL SECURITY;
 
 -- ---------- Check ----------
--- How many products fall in each expiry case
-SELECT
-    CASE
-        WHEN expiry_date <  CURRENT_DATE     THEN '1. Expired'
-        WHEN expiry_date <= CURRENT_DATE + 1 THEN '2. Today / 1 day (30%)'
-        WHEN expiry_date <= CURRENT_DATE + 3 THEN '3. 2-3 days (20%)'
-        ELSE                                      '4. More than 3 days'
-    END AS expiry_case,
-    COUNT(*) AS products
-FROM products
-GROUP BY 1
-ORDER BY 1;
+-- How many products get each action (from the live view)
+-- Expected: Apply 30% = 16, Apply 20% = 10, EXPIRED = 7, No action = 26
+SELECT action, COUNT(*) AS products
+FROM products_live
+GROUP BY action
+ORDER BY action;
