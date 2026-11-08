@@ -8,6 +8,27 @@
 3. Connection details: **Project Settings → Database** (host, port 5432, database `postgres`, user, password, SSL on).
 
 `database.sql` drops and recreates all tables, so running it again resets the demo data.
+**Tell the team before running it on the shared database:** anything added through Budibase or n8n will be deleted.
+
+Expiry dates are relative to the day you run the script. Run it again before the demo so the dates are fresh.
+
+## Security (RLS)
+The script turns on Row Level Security for all 3 tables. This blocks the public Supabase API.
+Budibase and n8n connect as the `postgres` user (the table owner), so they still have full access.
+
+## Sample data
+- **8 departments:** Dairy, Bakery, Meat, Vegetables, Fruits, Beverages, Snacks, Grocery
+- **10 employees:** 1 manager, 1 employee per department, and 1 inactive Dairy employee (Vishnu Das) to test deactivation
+- **59 products**, covering every expiry case:
+
+| Case | Products | Examples |
+|---|---|---|
+| Expired | 7 | Eggs, Buttermilk, Pav, Prawns |
+| Today / 1 day (30%) | 16 | Milk, Chicken, Croissant, Idli Batter |
+| 2–3 days (20%) | 10 | Bread, Cake, Mutton, Grapes |
+| More than 3 days | 26 | Rice, Ghee, Mineral Water |
+
+**Out of stock (quantity 0):** Strawberries and Veg Sandwich. They get a discount but must **not** appear in `customer_offers`.
 
 ## Tables (the contract: don't rename without telling the team)
 
