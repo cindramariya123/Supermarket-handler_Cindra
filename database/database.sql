@@ -43,6 +43,38 @@ CREATE TABLE products (
     image_url        TEXT          -- optional; overrides the department picture
 );
 
+-- 3b. Adding a product that already exists (same name, department and expiry
+--     date) adds to its quantity instead of creating a duplicate row.
+--     A different expiry date is a different batch and gets its own row.
+CREATE OR REPLACE FUNCTION merge_duplicate_stock() RETURNS trigger
+LANGUAGE plpgsql AS $$
+DECLARE
+    existing_id INT;
+BEGIN
+    SELECT id INTO existing_id
+    FROM products
+    WHERE lower(trim(product_name)) = lower(trim(NEW.product_name))
+      AND department_id = NEW.department_id
+      AND expiry_date   = NEW.expiry_date
+    ORDER BY id
+    LIMIT 1;
+
+    IF existing_id IS NOT NULL THEN
+        UPDATE products
+        SET quantity = quantity + COALESCE(NEW.quantity, 0),
+            price    = COALESCE(NEW.price, price)
+        WHERE id = existing_id;
+        RETURN NULL;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER merge_duplicate_stock
+BEFORE INSERT ON products
+FOR EACH ROW EXECUTE FUNCTION merge_duplicate_stock();
+
 -- 4. Live product view (read-only, for the dashboards)
 --    Calculates days left, discount and action from TODAY's date every time
 --    it is read, so it is always up to date, even before n8n runs.
